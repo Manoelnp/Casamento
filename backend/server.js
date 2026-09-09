@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const { MercadoPagoConfig, Payment } = require('mercadopago');
+const { MercadoPagoConfig, Payment, Preference } = require('mercadopago');
 
 const app = express();
 app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
@@ -13,6 +13,12 @@ const DB_PATH = path.join(__dirname, 'presentes.json');
 
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
 const paymentClient = new Payment(client);
+const preferenceClient = new Preference(client);
+
+// Detecta se estamos usando token de TESTE (começa com "TEST-") ou de
+// PRODUÇÃO (começa com "APP_USR-"). Usado para só ativar o truque de
+// aprovação automática quando estivermos testando.
+const MODO_TESTE = (process.env.MP_ACCESS_TOKEN || '').startsWith('TEST-');
 
 // ---------- "Banco de dados" simples em arquivo JSON ----------
 
@@ -85,7 +91,13 @@ app.post('/reservar/:id', async (req, res) => {
         transaction_amount: Number(presente.valor),
         description: `Presente de casamento: ${presente.nome}`,
         payment_method_id: 'pix',
-        payer: { email: process.env.PAGADOR_EMAIL_PADRAO },
+        payer: {
+          email: process.env.PAGADOR_EMAIL_PADRAO,
+          // Só em modo TESTE: esse nome faz o Mercado Pago aprovar o PIX
+          // sozinho, poucos segundos depois de criado. Em produção esse
+          // campo nem é enviado, então não interfere no pagador real.
+          ...(MODO_TESTE ? { first_name: 'APRO' } : {}),
+        },
         external_reference: presente.id,
       },
     });
@@ -122,7 +134,10 @@ app.post('/personalizado', async (req, res) => {
         transaction_amount: valorNumerico,
         description: 'Presente de casamento - valor livre',
         payment_method_id: 'pix',
-        payer: { email: process.env.PAGADOR_EMAIL_PADRAO },
+        payer: {
+          email: process.env.PAGADOR_EMAIL_PADRAO,
+          ...(MODO_TESTE ? { first_name: 'APRO' } : {}),
+        },
       },
     });
 
@@ -134,6 +149,92 @@ app.post('/personalizado', async (req, res) => {
   } catch (erro) {
     console.error('Erro ao criar pagamento personalizado:', erro);
     res.status(500).json({ erro: 'Não foi possível gerar o PIX. Tente novamente.' });
+  }
+});
+
+// Gera o link de pagamento no CARTÃO (com parcelamento) para um presente
+// específico da lista. O convidado é redirecionado pra uma página segura
+// do Mercado Pago, digita os dados do cartão lá, e volta pro site depois.
+app.post('/cartao/:id', async (req, res) => {
+  const { id } = req.params;
+  const presente = buscarPresente(id);
+
+  if (!presente) return res.status(404).json({ erro: 'Presente não encontrado' });
+  if (presente.status !== 'disponivel') {
+    return res.status(400).json({ erro: 'Esse presente já foi escolhido por outra pessoa' });
+  }
+
+  try {
+    const preferencia = await preferenceClient.create({
+      body: {
+        items: [
+          {
+            title: `Presente de casamento: ${presente.nome}`,
+            quantity: 1,
+            unit_price: Number(presente.valor),
+            currency_id: 'BRL',
+          },
+        ],
+        external_reference: presente.id,
+        back_urls: {
+          success: process.env.FRONTEND_URL,
+          failure: process.env.FRONTEND_URL,
+          pending: process.env.FRONTEND_URL,
+        },
+        auto_return: 'approved',
+      },
+    });
+
+    atualizarPresente(id, {
+      status: 'reservado',
+      payment_id: preferencia.id,
+      reservadoEm: Date.now(),
+    });
+
+    res.json({
+      link_pagamento: MODO_TESTE ? preferencia.sandbox_init_point : preferencia.init_point,
+    });
+  } catch (erro) {
+    console.error('Erro ao criar checkout de cartão:', erro);
+    res.status(500).json({ erro: 'Não foi possível iniciar o pagamento no cartão.' });
+  }
+});
+
+// Mesma coisa, mas para o valor livre ("outro valor")
+app.post('/cartao-personalizado', async (req, res) => {
+  const { valor } = req.body;
+  const valorNumerico = Number(valor);
+
+  if (!valorNumerico || valorNumerico <= 0) {
+    return res.status(400).json({ erro: 'Valor inválido' });
+  }
+
+  try {
+    const preferencia = await preferenceClient.create({
+      body: {
+        items: [
+          {
+            title: 'Presente de casamento - valor livre',
+            quantity: 1,
+            unit_price: valorNumerico,
+            currency_id: 'BRL',
+          },
+        ],
+        back_urls: {
+          success: process.env.FRONTEND_URL,
+          failure: process.env.FRONTEND_URL,
+          pending: process.env.FRONTEND_URL,
+        },
+        auto_return: 'approved',
+      },
+    });
+
+    res.json({
+      link_pagamento: MODO_TESTE ? preferencia.sandbox_init_point : preferencia.init_point,
+    });
+  } catch (erro) {
+    console.error('Erro ao criar checkout de cartão (valor livre):', erro);
+    res.status(500).json({ erro: 'Não foi possível iniciar o pagamento no cartão.' });
   }
 });
 
