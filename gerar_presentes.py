@@ -1,0 +1,82 @@
+import json
+
+itens = [
+    ("Teste", 0,04),
+    ("Lasanheira de vidro", 89.00),
+    ("Talheres inox", 112.00),
+    ("Porta condimentos", 79.00),
+    ("Potes de sobremesa", 66.00),
+    ("Jogo de taças de vinho", 150.00),
+    ("Potes herméticos", 90.00),
+    ("Petisqueira de vidro", 73.00),
+    ("Lixeira 10L inox", 142.00),
+    ("Lixeira 15L inox", 160.00),
+    ("Kit assadeira de louça branca", 160.00),
+    ("Jogo de taça de vinho cristal", 180.00),
+    ("Jogo de taça champanhe cristal", 120.00),
+    ("Kit frigideira anti aderente Tramontina (Grafite)", 143.00),
+    ("Queijeira de vidro Wollf", 73.00),
+    ("Processador de alimentos Oster", 180.00),
+    ("Quadros decorativos para sala", 178.00),
+    ("Ventilador 40cm 8 pás", 179.00),
+    ("Cabeceira de cama queen", 186.00),
+    ("Prato para bolo", 120.00),
+    ("Kit toalha bege (fio penteado)", 80.00),
+    ("Kit toalha branco (fio penteado)", 80.00),
+    ("Jogo de cama 3 peças algodão - queen (Bege)", 95.00),
+    ("Jogo de cama 3 peças algodão - queen (Cinza)", 95.00),
+    ("Jogo de cama 3 peças algodão - queen (Azul petróleo)", 95.00),
+    ("Cobre leito BRANCO - queen", 130.00),
+    ("Cobre leito VERDE - queen", 130.00),
+    ("Jogo de cama queen bordado luxo", 150.00),
+    ("Multiprocessador 5 em 1 (Preto)", 380.00),
+    ("Ferro de passar Black Decker", 119.00),
+    ("Kit de almofadas", 96.00),
+    ("Kit de utensílios de cozinha", 150.00),
+    ("Manta para sofá - Off white", 80.00),
+    ("Ajuda para a Lua de Mel", 80.00),
+    ("Kit para banheiro de louça branco", 85.00),
+    ("Kit para banheiro de louça cinza", 85.00),
+    ("Kit 2 travesseiros pena de Ganso", 120.00),
+    ("Lençol de elástico queen 100% algodão", 88.00),
+    ("Lençol de elástico queen 100% algodão", 88.00),
+    ("Saia de tecido algodão para cama queen (Branco)", 115.00),
+    ("Saia bordada algodão para cama queen (Branco)", 120.00),
+    ("Tapete luxo para sala 2m x 2,5m", 220.00),
+    ("Decoração centro de sala", 100.00),
+    ("Decoração da sala", 70.00),
+    ("Ajuda para a Lua de Mel", 100.00),
+    ("Decoração da sala", 79.00),
+    ("Máquina de lavar roupa", 1000.00),
+    ("Kit para churrasco", 100.00),
+    ("Jogo de panelas", 180.00),
+    ("Sanduicheira", 180.00),
+    ("Liquidificador", 200.00),
+    ("Ajuda para a Lua de Mel", 200.00),
+    ("Batedeira", 220.00),
+    ("Air Fryer", 300.00),
+    ("Ajuda para a Lua de Mel", 300.00),
+    ("Mesa de madeira", 350.00),
+    ("Rack para sala", 400.00),
+    ("Ajuda para a Lua de Mel", 500.00),
+    ("Cama", 500.00),
+    ("Gelágua Electrolux", 600.00),
+    ("Sofá", 800.00),
+    ("Ajuda para a Lua de Mel", 1000.00),
+    ("Televisão", 1500.00),
+    ("Geladeira", 2000.00),
+]
+
+presentes = []
+for i, (nome, valor) in enumerate(itens, start=1):
+    presentes.append({
+        "id": str(i),
+        "nome": nome,
+        "valor": valor,
+        "status": "disponivel"
+    })
+
+with open("presentes.json", "w", encoding="utf-8") as f:
+    json.dump(presentes, f, ensure_ascii=False, indent=2)
+
+print(f"{len(presentes)} presentes gerados.")

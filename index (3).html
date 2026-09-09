@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4eee4">
+
+  <title>Manoel & Raísa — Nosso Casamento</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600&family=Parisienne&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+
+    :root {
+      --cream: #f4eee4;
+      --paper: #fbf8f2;
+      --ink: #3f4630;
+      --olive: #596044;
+      --olive-dark: #454b34;
+      --olive-light: #737b58;
+      --gold: #a68a62;
+      --line: #d8cbbb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: Montserrat, Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body.locked {
+      overflow: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font-family: inherit;
+    }
+
+
+    .welcome-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background:
+        radial-gradient(
+          circle at center,
+          #fffdf8 0%,
+          #f8f3e9 55%,
+          #e9e2d4 100%
+        );
+      color: var(--olive);
+      text-align: center;
+      overflow: hidden;
+      transition:
+        opacity .8s ease,
+        visibility .8s ease;
+    }
+
+    .welcome-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .welcome-content {
+      width: min(600px, 100%);
+      position: relative;
+      padding: 20px 15px 25px;
+    }
+
+    .floral {
+      position: fixed;
+      width: 210px;
+      height: 210px;
+      opacity: .58;
+      pointer-events: none;
+    }
+
+    .floral svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .floral-top-left { top: -25px; left: -20px; }
+    .floral-top-right { top: -25px; right: -20px; transform: scaleX(-1); }
+    .floral-bottom-left { bottom: -25px; left: -20px; transform: scaleY(-1); }
+    .floral-bottom-right { bottom: -25px; right: -20px; transform: scale(-1); }
+
+    .welcome-monogram {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 72px;
+      line-height: .8;
+      letter-spacing: -.08em;
+      margin-bottom: 24px;
+      color: var(--olive);
+    }
+
+    .welcome-monogram span {
+      font-family: Parisienne, cursive;
+      font-size: .42em;
+      margin: 0 5px;
+      color: var(--olive-light);
+    }
+
+    .welcome-names {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      margin-bottom: 25px;
+      color: var(--olive-dark);
+    }
+
+    .welcome-message {
+      font-size: 8px;
+      line-height: 1.7;
+      letter-spacing: .10em;
+      color: var(--olive-dark);
+      margin-bottom: 18px;
+    }
+
+    .welcome-date {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 15px;
+      letter-spacing: .16em;
+      margin-bottom: 25px;
+      color: var(--olive);
+    }
+
+    .envelope-button {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto;
+      transition: .3s ease;
+    }
+
+    .envelope-button:hover { transform: translateY(-5px); }
+
+    .envelope {
+      width: 260px;
+      height: 165px;
+      position: relative;
+      margin: auto;
+      filter: drop-shadow(0 15px 18px rgba(61, 67, 43, .25));
+    }
+
+    .envelope-body {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, #68704f, #454b34);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0; left: 0;
+      width: 0; height: 0;
+      border-left: 130px solid transparent;
+      border-right: 130px solid transparent;
+      border-top: 92px solid #747c59;
+      z-index: 3;
+    }
+
+    .envelope-body::before {
+      content: "";
+      position: absolute; left: 0; bottom: 0;
+      width: 0; height: 0;
+      border-top: 80px solid transparent;
+      border-left: 130px solid #3f452f;
+    }
+
+    .envelope-body::after {
+      content: "";
+      position: absolute; right: 0; bottom: 0;
+      width: 0; height: 0;
+      border-top: 80px solid transparent;
+      border-right: 130px solid #3f452f;
+    }
+
+    .envelope-seal {
+      position: absolute;
+      z-index: 5;
+      left: 50%; top: 55%;
+      transform: translate(-50%, -50%);
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, #899164, #4e5638);
+      border: 3px solid #a3aa7d;
+      color: #f8f3e8;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 25px;
+      font-weight: 600;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, .30);
+    }
+
+    .envelope-seal::after {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border: 1px solid rgba(255,255,255,.40);
+      border-radius: 50%;
+    }
+
+    .hand-cursor {
+      position: absolute;
+      z-index: 7;
+      right: 62px; bottom: 28px;
+      font-size: 23px;
+      color: #f8f3e8;
+      text-shadow: 0 2px 5px #303426;
+      animation: clickHint 1.5s infinite;
+    }
+
+    @keyframes clickHint {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-3px, -5px); }
+    }
+
+    .welcome-hint {
+      margin-top: 20px;
+      font-size: 8px;
+      letter-spacing: .22em;
+      color: var(--olive-light);
+    }
+
+    .hero {
+      min-height: 100svh;
+      background:
+        linear-gradient(180deg, rgba(24,21,17,.08), rgba(24,21,17,.55)),
+        url("hero.png") center/cover;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 40px 18px;
+    }
+
+    .hero-card {
+      width: min(620px,100%);
+      text-align: center;
+      color: white;
+      padding: 28px 22px 44px;
+      text-shadow: 0 2px 18px #0008;
+    }
+
+    .kicker { letter-spacing: .35em; font-size: 11px; }
+
+    .names {
+      font-family: Parisienne, cursive;
+      font-size: clamp(62px, 16vw, 105px);
+      line-height: .85;
+      margin: 26px 0;
+    }
+
+    .names small {
+      font-family: "Cormorant Garamond", serif;
+      font-size: .42em;
+      display: block;
+      margin: 12px;
+    }
+
+    .hero-date { letter-spacing: .16em; font-size: 13px; }
+
+    section { padding: 72px 18px; }
+
+    .wrap { width: min(1000px,100%); margin: auto; }
+
+    .paper {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: 0 18px 60px #6d604415;
+    }
+
+    .countdown {
+      margin: -35px auto 0;
+      position: relative;
+      padding: 24px 18px;
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 8px;
+      text-align: center;
+    }
+
+    .countdown strong {
+      font: 500 36px "Cormorant Garamond", serif;
+      display: block;
+    }
+
+    .countdown span { font-size: 9px; letter-spacing: .16em; }
+
+    .intro { text-align: center; }
+
+    .eyebrow { letter-spacing: .28em; font-size: 11px; color: var(--olive); }
+
+    h2 { font: 500 48px "Cormorant Garamond", serif; margin: 12px 0 22px; }
+
+    p { line-height: 1.8; }
+
+    .events { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+    .event { padding: 34px; text-align: center; }
+
+    .icon { font-size: 34px; color: var(--olive); }
+
+    .event h3 { font: 500 32px "Cormorant Garamond", serif; margin: 12px; }
+
+    .event p { margin: 4px 0 20px; }
+
+    .btn {
+      display: inline-block;
+      padding: 13px 20px;
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: .12em;
+      background: transparent;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .action {
+      padding: 24px 10px;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      color: var(--ink);
+      transition: .2s;
+    }
+
+    .action:hover { transform: translateY(-3px); }
+
+    .action b {
+      display: block;
+      font: 500 25px "Cormorant Garamond", serif;
+      margin: 7px;
+    }
+
+    .action small { font-size: 9px; letter-spacing: .12em; }
+
+    .quote { text-align: center; padding: 65px 25px; }
+
+    .quote p {
+      font: 400 27px "Cormorant Garamond", serif;
+      max-width: 700px;
+      margin: 20px auto;
+    }
+
+    .signature { font: 48px Parisienne, cursive; }
+
+    .rsvp { padding: 34px; }
+
+    .rsvp input,
+    .rsvp select {
+      width: 100%;
+      padding: 14px;
+      margin: 7px 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fffdf9;
+      font: inherit;
+      outline: none;
+    }
+
+    .rsvp input:focus,
+    .rsvp select:focus { border-color: var(--gold); }
+
+    .rsvp .btn {
+      margin-top: 8px;
+      background: var(--ink);
+      color: white;
+      width: 100%;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 18px 65px;
+      font-size: 10px;
+      letter-spacing: .12em;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: #17140fcc;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 200;
+      overflow-y: auto;
+    }
+
+    .modal.show { display: flex; }
+
+    .modal-card {
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      border-radius: 24px;
+      background: var(--paper);
+    }
+
+    .modal-card h3 {
+      font: 500 34px "Cormorant Garamond", serif;
+      margin-top: 0;
+    }
+
+    .close {
+      float: right;
+      border: 0;
+      background: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--ink);
+    }
+
+    .gift-list { display: grid; gap: 10px; margin-top: 20px; }
+
+    .gift-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 15px 17px;
+      background: #fffdf9;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+    }
+
+    .gift-item.dado {
+      opacity: .55;
+    }
+
+    .gift-info { text-align: left; }
+
+    .gift-name { font: 23px "Cormorant Garamond", serif; }
+
+    .gift-price { font-size: 12px; color: var(--olive); margin-top: 3px; }
+
+    .gift-item .btn { white-space: nowrap; padding: 10px 14px; font-size: 9px; }
+
+    .gift-item .btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .pix-box {
+      margin-top: 25px;
+      padding: 22px;
+      text-align: center;
+      background: #f1eadf;
+      border-radius: 18px;
+    }
+
+    .pix-title { font: 27px "Cormorant Garamond", serif; }
+
+    .pix-key {
+      margin: 14px 0;
+      padding: 13px;
+      background: #fffdf9;
+      border: 1px dashed var(--gold);
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .copy-btn { background: var(--olive); color: white; border-color: var(--olive); width: 100%; }
+
+    .confirm-btn {
+      display: block;
+      width: 100%;
+      margin-top: 15px;
+      text-align: center;
+      background: var(--ink);
+      color: white;
+      border-color: var(--ink);
+    }
+
+    .other-value {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .other-value input {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fffdf9;
+      font: inherit;
+    }
+
+    .qr-code-img {
+      width: 220px;
+      height: 220px;
+      margin: 15px auto;
+      display: block;
+      background: white;
+      padding: 8px;
+      border-radius: 12px;
+    }
+
+    .pix-status {
+      margin-top: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--olive);
+    }
+
+    .pix-status.aprovado {
+      color: #3f7a3f;
+    }
+
+    .music-button {
+      position: fixed;
+      right: 18px; bottom: 18px;
+      z-index: 30;
+      border: 1px solid rgba(89,96,68,.7);
+      background: rgba(251,248,242,.94);
+      color: var(--olive-dark);
+      padding: 12px 17px;
+      border-radius: 999px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.15);
+      font-size: 10px;
+      letter-spacing: .12em;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: .2s;
+      display: none;
+    }
+
+    .music-button.visible { display: block; }
+    .music-button:hover { transform: translateY(-2px); }
+    .music-button.playing { background: var(--olive); color: white; }
+
+    #weddingMusic { display: none; }
+
+    @media (max-width: 700px) {
+
+      section { padding: 55px 14px; }
+
+      .hero {
+        min-height: 100svh;
+        padding: 25px 14px 35px;
+        background-size: contain;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-color: #2f3325;
+      }
+
+      .hero-card { padding: 20px 12px 30px; }
+      .kicker { font-size: 9px; letter-spacing: .25em; }
+      .names { font-size: clamp(58px, 20vw, 82px); margin: 22px 0; }
+      .hero-date { font-size: 10px; letter-spacing: .10em; }
+
+      .welcome-monogram { font-size: 65px; margin-bottom: 22px; }
+      .welcome-names { font-size: 25px; letter-spacing: .09em; margin-bottom: 22px; }
+      .welcome-message { font-size: 7px; letter-spacing: .07em; }
+      .welcome-date { font-size: 12px; margin-bottom: 22px; }
+
+      .envelope { width: 235px; height: 150px; }
+      .envelope-flap { border-left-width: 117px; border-right-width: 117px; border-top-width: 83px; }
+      .envelope-body::before { border-left-width: 117px; }
+      .envelope-body::after { border-right-width: 117px; }
+      .envelope-seal { width: 53px; height: 53px; }
+      .floral { width: 150px; height: 150px; }
+
+      .countdown { padding: 20px 8px; gap: 2px; }
+      .countdown strong { font-size: 28px; }
+      .countdown span { font-size: 7px; letter-spacing: .08em; }
+
+      h2 { font-size: 38px; }
+      p { font-size: 14px; }
+
+      .events { grid-template-columns: 1fr; }
+      .event { padding: 28px 18px; }
+
+      .actions { grid-template-columns: repeat(3,1fr); gap: 7px; }
+      .action { padding: 18px 5px; min-height: 100px; }
+      .action b { font-size: 23px; }
+      .action small { font-size: 7px; letter-spacing: .07em; }
+
+      .quote { padding: 45px 18px; }
+      .quote p { font-size: 24px; }
+      .signature { font-size: 40px; }
+
+      .rsvp { padding: 25px 18px; }
+
+      .gift-item { flex-direction: column; align-items: stretch; padding: 17px; }
+      .gift-name { font-size: 21px; }
+      .gift-item .btn { text-align: center; width: 100%; padding: 12px; }
+
+      .modal { padding: 10px; }
+      .modal-card { padding: 22px 18px; border-radius: 20px; max-height: 92vh; }
+      .modal-card h3 { font-size: 30px; }
+
+      .pix-box { padding: 18px 14px; }
+      .pix-title { font-size: 24px; }
+
+      .music-button { right: 12px; bottom: 12px; padding: 11px 14px; font-size: 9px; }
+
+    }
+
+    @media (max-width: 380px) {
+      .actions { gap: 5px; }
+      .action { min-height: 95px; }
+      .action b { font-size: 20px; }
+      .action small { font-size: 6.5px; }
+      .countdown strong { font-size: 25px; }
+    }
+
+  </style>
+</head>
+
+
+<body class="locked">
+
+
+  <div id="welcomeScreen" class="welcome-screen">
+
+    <div class="floral floral-top-left">
+      <svg viewBox="0 0 200 200" fill="none">
+        <path d="M5 175 C45 140 50 90 105 55 C135 35 165 25 195 5" stroke="#596044" stroke-width="1.2" />
+        <path d="M55 125 C35 105 20 102 8 105" stroke="#596044" stroke-width="1" />
+        <path d="M73 105 C55 75 40 62 22 60" stroke="#596044" stroke-width="1" />
+        <path d="M97 78 C85 48 78 30 65 17" stroke="#596044" stroke-width="1" />
+        <path d="M43 140 C25 130 12 130 2 136" stroke="#596044" stroke-width="1" />
+        <ellipse cx="25" cy="58" rx="15" ry="7" transform="rotate(-35 25 58)" stroke="#596044" stroke-width="1" />
+        <ellipse cx="66" cy="27" rx="17" ry="8" transform="rotate(-55 66 27)" stroke="#596044" stroke-width="1" />
+        <ellipse cx="12" cy="105" rx="17" ry="8" transform="rotate(10 12 105)" stroke="#596044" stroke-width="1" />
+        <ellipse cx="44" cy="136" rx="17" ry="8" transform="rotate(20 44 136)" stroke="#596044" stroke-width="1" />
+        <circle cx="113" cy="51" r="7" stroke="#596044" stroke-width="1" />
+        <circle cx="143" cy="31" r="5" stroke="#596044" stroke-width="1" />
+      </svg>
+    </div>
+
+    <div class="floral floral-top-right">
+      <svg viewBox="0 0 200 200" fill="none">
+        <path d="M5 175 C45 140 50 90 105 55 C135 35 165 25 195 5" stroke="#596044" stroke-width="1.2" />
+        <path d="M55 125 C35 105 20 102 8 105" stroke="#596044" stroke-width="1" />
+        <path d="M73 105 C55 75 40 62 22 60" stroke="#596044" stroke-width="1" />
+        <path d="M97 78 C85 48 78 30 65 17" stroke="#596044" stroke-width="1" />
+        <ellipse cx="25" cy="58" rx="15" ry="7" transform="rotate(-35 25 58)" stroke="#596044" stroke-width="1" />
+        <ellipse cx="66" cy="27" rx="17" ry="8" transform="rotate(-55 66 27)" stroke="#596044" stroke-width="1" />
+        <ellipse cx="12" cy="105" rx="17" ry="8" transform="rotate(10 12 105)" stroke="#596044" stroke-width="1" />
+        <circle cx="113" cy="51" r="7" stroke="#596044" stroke-width="1" />
+        <circle cx="143" cy="31" r="5" stroke="#596044" stroke-width="1" />
+      </svg>
+    </div>
+
+    <div class="floral floral-bottom-left">
+      <svg viewBox="0 0 200 200" fill="none">
+        <path d="M5 175 C45 140 50 90 105 55 C135 35 165 25 195 5" stroke="#596044" stroke-width="1.2" />
+        <path d="M55 125 C35 105 20 102 8 105" stroke="#596044" stroke-width="1" />
+        <path d="M73 105 C55 75 40 62 22 60" stroke="#596044" stroke-width="1" />
+        <path d="M97 78 C85 48 78 30 65 17" stroke="#596044" stroke-width="1" />
+        <ellipse cx="25" cy="58" rx="15" ry="7" transform="rotate(-35 25 58)" stroke="#596044" stroke-width="1" />
+        <ellipse cx="66" cy="27" rx="17" ry="8" transform="rotate(-55 66 27)" stroke="#596044" stroke-width="1" />
+        <ellipse cx="12" cy="105" rx="17" ry="8" transform="rotate(10 12 105)" stroke="#596044" stroke-width="1" />
+        <circle cx="113" cy="51" r="7" stroke="#596044" stroke-width="1" />
+      </svg>
+    </div>
+
+    <div class="floral floral-bottom-right">
+      <svg viewBox="0 0 200 200" fill="none">
+        <path d="M5 175 C45 140 50 90 105 55 C135 35 165 25 195 5" stroke="#596044" stroke-width="1.2" />
+        <path d="M55 125 C35 105 20 102 8 105" stroke="#596044" stroke-width="1" />
+        <path d="M73 105 C55 75 40 62 22 60" stroke="#596044" stroke-width="1" />
+        <path d="M97 78 C85 48 78 30 65 17" stroke="#596044" stroke-width="1" />
+        <ellipse cx="25" cy="58" rx="15" ry="7" transform="rotate(-35 25 58)" stroke="#596044" stroke-width="1" />
+        <ellipse cx="66" cy="27" rx="17" ry="8" transform="rotate(-55 66 27)" stroke="#596044" stroke-width="1" />
+        <ellipse cx="12" cy="105" rx="17" ry="8" transform="rotate(10 12 105)" stroke="#596044" stroke-width="1" />
+        <circle cx="113" cy="51" r="7" stroke="#596044" stroke-width="1" />
+      </svg>
+    </div>
+
+    <div class="welcome-content">
+
+      <div class="welcome-monogram">M<span>&</span>R</div>
+
+      <div class="welcome-names">MANOEL & RAÍSA</div>
+
+      <div class="welcome-message">
+        COM A BÊNÇÃO DE DEUS E DE SEUS PAIS,<br>
+        CONVIDAM PARA CELEBRAR O AMOR EM<br>
+        SEU CASAMENTO
+      </div>
+
+      <div class="welcome-date">16 DE JANEIRO DE 2027 · 17H00</div>
+
+      <button id="enterButton" class="envelope-button" onclick="enterInvitation()" aria-label="Abrir convite">
+        <div class="envelope">
+          <div class="envelope-flap"></div>
+          <div class="envelope-body"></div>
+          <div class="envelope-seal">M&R</div>
+          <div class="hand-cursor">♡</div>
+        </div>
+      </button>
+
+      <div class="welcome-hint">CLIQUE NO ENVELOPE</div>
+
+    </div>
+
+  </div>
+
+
+  <header class="hero">
+    <div class="hero-card">
+      <div class="kicker">NOSSO CASAMENTO</div>
+      <div class="names">Manoel <small>&</small> Raísa</div>
+      <div class="hero-date">16 DE JANEIRO DE 2027 · 17H00</div>
+    </div>
+  </header>
+
+
+  <main>
+
+    <section>
+      <div class="wrap">
+        <div class="paper countdown">
+          <div><strong id="days">—</strong><span>DIAS</span></div>
+          <div><strong id="hours">—</strong><span>HORAS</span></div>
+          <div><strong id="mins">—</strong><span>MINUTOS</span></div>
+          <div><strong id="secs">—</strong><span>SEGUNDOS</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="intro">
+      <div class="wrap">
+        <div class="eyebrow">COM MUITO AMOR</div>
+        <h2>Um dia para guardar para sempre</h2>
+        <p>
+          É com muita alegria que convidamos você
+          para celebrar conosco o início de uma nova
+          etapa da nossa história.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap events">
+
+        <article class="paper event">
+          <div class="icon">♰</div>
+          <h3>Cerimônia</h3>
+          <p>Igreja de Nossa Senhora da Guia</p>
+          <a class="btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/8MpPFTYrTSVn9D8JA">VER NO MAPA</a>
+        </article>
+
+        <article class="paper event">
+          <div class="icon">🥂</div>
+          <h3>Recepção</h3>
+          <p>Chácara de Mangueira</p>
+          <a class="btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/vuRjyN5StRGVfjAo6">VER NO MAPA</a>
+        </article>
+
+      </div>
+
+      <div class="wrap actions">
+
+        <button class="paper action" onclick="openModal('rsvp')">
+          <b>✓</b>
+          <small>CONFIRMAR<br>PRESENÇA</small>
+        </button>
+
+        <button class="paper action" onclick="openModal('gift')">
+          <b>♡</b>
+          <small>LISTA DE<br>PRESENTES</small>
+        </button>
+
+        <button class="paper action" onclick="openModal('story')">
+          <b>✦</b>
+          <small>NOSSA<br>HISTÓRIA</small>
+        </button>
+
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap paper quote">
+        <div class="eyebrow">NOSSOS VOTOS</div>
+        <p>Que o nosso amor continue sendo a nossa melhor escolha, todos os dias.</p>
+        <div class="signature">Manoel & Raísa</div>
+      </div>
+    </section>
+
+    <section id="rsvpSection" style="padding-top:0">
+      <div class="wrap paper rsvp">
+        <div class="eyebrow">RSVP</div>
+        <h2>Confirme sua presença</h2>
+
+        <form onsubmit="sendRSVP(event)">
+          <input id="guest" required autocomplete="name" placeholder="Seu nome">
+
+          <select id="answer" required>
+            <option value="">Você estará conosco?</option>
+            <option value="Sim, com certeza!">Sim, com certeza!</option>
+            <option value="Infelizmente não poderei ir">Infelizmente não poderei ir</option>
+          </select>
+
+          <button class="btn" type="submit">CONFIRMAR PELO WHATSAPP</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+
+  <footer>MANOEL & RAÍSA · 16.01.2027</footer>
+
+
+  <button id="musicButton" class="music-button" onclick="toggleMusic()">♫ TOCAR MÚSICA</button>
+
+  <audio id="weddingMusic" preload="auto" loop>
+    <source src="musica.mp3" type="audio/mpeg">
+  </audio>
+
+
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <button class="close" onclick="closeModal()">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+
+  <script>
+
+    /* =====================================================
+       CONFIGURAÇÕES
+    ===================================================== */
+
+    const whatsapp = "5583988231595";
+    const pix = "firminomanoel275@gmail.com";
+
+    // URL do backend que gera o PIX e confirma o pagamento.
+    // Troque para a URL publicada quando colocar no ar (ex: Render/Railway).
+    const API_URL = "http://localhost:3000";
+
+    // Guarda a lista de presentes vinda do backend, para não precisar
+    // buscar de novo toda vez que abrir um presente específico.
+    let presentesCache = [];
+
+    // Guarda o intervalo de checagem de pagamento em andamento,
+    // para conseguirmos cancelá-lo quando o modal for fechado.
+    let intervaloPagamento = null;
+
+
+    /* =====================================================
+       CONTAGEM
+    ===================================================== */
+
+    const wedding = new Date("2027-01-16T17:00:00-03:00");
+
+    function tick() {
+      let d = Math.max(0, wedding - new Date());
+      let s = Math.floor(d / 1000);
+
+      document.getElementById("days").textContent = Math.floor(s / 86400);
+      s %= 86400;
+      document.getElementById("hours").textContent = String(Math.floor(s / 3600)).padStart(2, "0");
+      s %= 3600;
+      document.getElementById("mins").textContent = String(Math.floor(s / 60)).padStart(2, "0");
+      document.getElementById("secs").textContent = String(s % 60).padStart(2, "0");
+    }
+
+    tick();
+    setInterval(tick, 1000);
+
+
+    /* =====================================================
+       MÚSICA
+    ===================================================== */
+
+    const music = document.getElementById("weddingMusic");
+    const musicButton = document.getElementById("musicButton");
+    let musicPlaying = false;
+
+    function updateMusicButton() {
+      if (musicPlaying) {
+        musicButton.textContent = "♫ PAUSAR MÚSICA";
+        musicButton.classList.add("playing");
+      } else {
+        musicButton.textContent = "♫ TOCAR MÚSICA";
+        musicButton.classList.remove("playing");
+      }
+    }
+
+    music.addEventListener("play", function() {
+      musicPlaying = true;
+      updateMusicButton();
+    });
+
+    music.addEventListener("pause", function() {
+      musicPlaying = false;
+      updateMusicButton();
+    });
+
+    music.addEventListener("ended", function() {
+      music.currentTime = 0;
+      music.play().catch(function() {});
+    });
+
+
+    /* =====================================================
+       ABRIR CONVITE
+    ===================================================== */
+
+    function enterInvitation() {
+
+      music.volume = 1;
+      const playPromise = music.play();
+
+      if (playPromise !== undefined) {
+        playPromise
+          .then(function() {
+            musicPlaying = true;
+            updateMusicButton();
+          })
+          .catch(function(error) {
+            console.log("O navegador bloqueou o áudio:", error);
+            musicPlaying = false;
+            updateMusicButton();
+          });
+      }
+
+      document.body.classList.remove("locked");
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("musicButton").classList.add("visible");
+    }
+
+
+    /* =====================================================
+       BOTÃO TOCAR / PAUSAR
+    ===================================================== */
+
+    function toggleMusic() {
+      if (music.paused) {
+        music.play()
+          .then(function() {
+            musicPlaying = true;
+            updateMusicButton();
+          })
+          .catch(function(error) {
+            console.log("Não foi possível tocar a música:", error);
+            alert("Toque novamente no botão para iniciar a música.");
+          });
+      } else {
+        music.pause();
+        musicPlaying = false;
+        updateMusicButton();
+      }
+    }
+
+
+    /* =====================================================
+       MODAIS
+    ===================================================== */
+
+    function openModal(type) {
+
+      const c = document.getElementById("modalContent");
+
+      if (type === "rsvp") {
+        c.innerHTML = `
+          <div class="eyebrow">PRESENÇA</div>
+          <h3>Será uma alegria ter você conosco! ❤️</h3>
+          <p>Confirme sua presença através do WhatsApp. É rápido e fácil.</p>
+          <a class="btn" href="#rsvpSection" onclick="closeModal()">CONFIRMAR AGORA</a>
+        `;
+      }
+
+      if (type === "gift") {
+        renderGiftModal();
+      }
+
+      if (type === "story") {
+        c.innerHTML = `
+          <div class="eyebrow">NOSSA HISTÓRIA</div>
+          <h3>Manoel & Raísa</h3>
+          <p>
+            Há alguns anos, nossas vidas se encontraram
+            e, desde então, começamos a construir uma
+            história que foi muito além do que imaginávamos.
+          </p>
+          <p>
+            Foram anos de companheirismo, aprendizados,
+            sonhos compartilhados e muitos momentos que
+            fizeram nosso amor crescer e se fortalecer.
+            Juntos, aprendemos que amar também é escolher
+            um ao outro todos os dias, estar presente nos
+            momentos bons e difíceis e sonhar com um
+            futuro em comum.
+          </p>
+          <p>
+            Hoje, depois de tudo o que vivemos, damos
+            mais um passo nessa história. Estamos
+            construindo nosso lar, nossos planos e,
+            principalmente, uma vida juntos.
+          </p>
+          <p>
+            E agora chegou o momento de celebrar aquilo
+            que já sabemos há muito tempo: queremos
+            caminhar lado a lado para o resto de nossas vidas.
+          </p>
+          <p>
+            No dia 16 de janeiro de 2027, diante das
+            pessoas que amamos, vamos dizer o nosso
+            tão esperado “sim” diante de Deus.
+            Todos que nos conhecem sabe o quão importante
+            é esse momento na presença de Jesus e Nossa Senhora
+            E começar oficialmente um novo capítulo da nossa história.
+          </p>
+          <p>Com amor, Manoel & Raísa. ❤️</p>
+        `;
+      }
+
+      document.getElementById("modal").classList.add("show");
+    }
+
+
+    /* =====================================================
+       LISTA DE PRESENTES (agora vinda do backend)
+    ===================================================== */
+
+    async function renderGiftModal() {
+
+      const c = document.getElementById("modalContent");
+
+      c.innerHTML = `
+        <div class="eyebrow">COM CARINHO</div>
+        <h3>Lista de presentes</h3>
+        <p>Carregando lista de presentes...</p>
+      `;
+
+      try {
+        const res = await fetch(`${API_URL}/presentes`);
+        const presentes = await res.json();
+        presentesCache = presentes;
+
+        const listaHtml = presentes.map(giftItem).join("");
+
+        c.innerHTML = `
+          <div class="eyebrow">COM CARINHO</div>
+          <h3>Lista de presentes</h3>
+          <p>
+            Sua presença já é o nosso maior presente.
+            Mas, se desejar nos presentear,
+            escolha uma das opções abaixo. ❤️
+          </p>
+
+          <div class="gift-list">${listaHtml}</div>
+
+          <div class="pix-box">
+            <div class="pix-title">💍 Quer presentear com outro valor?</div>
+            <p>Você pode fazer um PIX no valor que desejar.</p>
+            <button class="btn" onclick="openOtherValue()">ESCOLHER OUTRO VALOR</button>
+          </div>
+        `;
+      } catch (erro) {
+        console.error(erro);
+        c.innerHTML = `
+          <div class="eyebrow">COM CARINHO</div>
+          <h3>Lista de presentes</h3>
+          <p>Não foi possível carregar a lista agora. Tente novamente em instantes.</p>
+        `;
+      }
+    }
+
+    function giftItem(presente) {
+      const comprado = presente.status === "comprado";
+      const reservado = presente.status === "reservado";
+      const indisponivel = comprado || reservado;
+
+      let texto = "PRESENTEAR";
+      if (comprado) texto = "JÁ FOI DADO";
+      else if (reservado) texto = "AGUARDANDO PAGAMENTO";
+
+      return `
+        <div class="gift-item ${indisponivel ? "dado" : ""}">
+          <div class="gift-info">
+            <div class="gift-name">${presente.nome}</div>
+            <div class="gift-price">R$ ${Number(presente.valor).toFixed(2).replace(".", ",")}</div>
+          </div>
+
+          <button class="btn" ${indisponivel ? "disabled" : ""} onclick="openGift('${presente.id}')">
+            ${texto}
+          </button>
+        </div>
+      `;
+    }
+
+
+    /* =====================================================
+       ABRIR PRESENTE ESPECÍFICO → GERA O PIX
+    ===================================================== */
+
+    async function openGift(id) {
+
+      const presente = presentesCache.find((p) => p.id === id);
+      const c = document.getElementById("modalContent");
+
+      c.innerHTML = `
+        <div class="eyebrow">PRESENTE ESCOLHIDO</div>
+        <h3>${presente ? presente.nome : ""}</h3>
+        <p>Gerando o QR Code do PIX...</p>
+      `;
+
+      try {
+        const res = await fetch(`${API_URL}/reservar/${id}`, { method: "POST" });
+        const dados = await res.json();
+
+        if (!res.ok) {
+          c.innerHTML += `<p style="color:#a33">${dados.erro || "Não foi possível gerar o PIX."}</p>`;
+          return;
+        }
+
+        exibirTelaPix({
+          titulo: presente ? presente.nome : "Presente",
+          valor: presente ? `R$ ${Number(presente.valor).toFixed(2).replace(".", ",")}` : "",
+          qrCodeBase64: dados.qr_code_base64,
+          copiaECola: dados.copia_e_cola,
+          paymentId: dados.payment_id,
+          giftId: id,
+        });
+
+      } catch (erro) {
+        console.error(erro);
+        c.innerHTML += `<p style="color:#a33">Erro ao conectar com o servidor.</p>`;
+      }
+    }
+
+
+    /* =====================================================
+       TELA DO PIX (QR CODE + POLLING DE STATUS)
+    ===================================================== */
+
+    function exibirTelaPix({ titulo, valor, qrCodeBase64, copiaECola, paymentId, giftId }) {
+
+      const c = document.getElementById("modalContent");
+
+      c.innerHTML = `
+        <div class="eyebrow">PRESENTE ESCOLHIDO</div>
+        <h3>${titulo}</h3>
+        ${valor ? `<p>Você escolheu nos presentear com <strong>${valor}</strong>.</p>` : ""}
+
+        <div class="pix-box">
+          <div class="pix-title">💳 Escaneie o QR Code para pagar</div>
+
+          <img class="qr-code-img" src="data:image/png;base64,${qrCodeBase64}" alt="QR Code PIX" />
+
+          <p>Ou copie o código abaixo:</p>
+
+          <div class="pix-key" id="pixKeyCopiaECola">${copiaECola}</div>
+
+          <button class="btn copy-btn" onclick="copiarCodigoPix('${copiaECola}')">COPIAR CÓDIGO PIX</button>
+
+          <p id="pixStatus" class="pix-status">Aguardando confirmação do pagamento...</p>
+        </div>
+      `;
+
+      // Cancela qualquer checagem anterior e começa uma nova
+      if (intervaloPagamento) clearInterval(intervaloPagamento);
+
+      intervaloPagamento = setInterval(async () => {
+        try {
+          const res = await fetch(`${API_URL}/status-pagamento/${paymentId}`);
+          const dados = await res.json();
+
+          if (dados.status === "approved") {
+            clearInterval(intervaloPagamento);
+
+            const statusEl = document.getElementById("pixStatus");
+            if (statusEl) {
+              statusEl.textContent = "✅ Pagamento confirmado! Muito obrigado ❤️";
+              statusEl.classList.add("aprovado");
+            }
+          }
+        } catch (erro) {
+          console.error("Erro ao checar status do pagamento:", erro);
+        }
+      }, 3000);
+    }
+
+    function copiarCodigoPix(codigo) {
+      navigator.clipboard.writeText(codigo)
+        .then(function() {
+          const button = document.querySelector(".copy-btn");
+          const textoOriginal = button.textContent;
+          button.textContent = "CÓDIGO COPIADO ✓";
+          setTimeout(function() {
+            button.textContent = textoOriginal;
+          }, 2000);
+        })
+        .catch(function() {
+          alert("Não foi possível copiar automaticamente. Copie o código manualmente.");
+        });
+    }
+
+
+    /* =====================================================
+       VALOR PERSONALIZADO ("Ajuda para a Lua de Mel" livre)
+    ===================================================== */
+
+    function openOtherValue() {
+      const c = document.getElementById("modalContent");
+
+      c.innerHTML = `
+        <div class="eyebrow">OUTRO VALOR</div>
+        <h3>Escolha quanto deseja presentear ❤️</h3>
+        <p>Digite o valor que deseja enviar como presente para nós.</p>
+
+        <div class="other-value">
+          <input id="customValue" type="number" min="1" step="0.01" inputmode="decimal" placeholder="Ex.: 250">
+          <button class="btn confirm-btn" onclick="openCustomGift()">CONTINUAR</button>
+        </div>
+      `;
+    }
+
+    async function openCustomGift() {
+      const valor = document.getElementById("customValue").value;
+
+      if (!valor || Number(valor) <= 0) {
+        alert("Digite um valor válido.");
+        return;
+      }
+
+      const c = document.getElementById("modalContent");
+      c.innerHTML = `
+        <div class="eyebrow">SEU PRESENTE</div>
+        <h3>Gerando o QR Code do PIX...</h3>
+      `;
+
+      try {
+        const res = await fetch(`${API_URL}/personalizado`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ valor: Number(valor) }),
+        });
+
+        const dados = await res.json();
+
+        if (!res.ok) {
+          c.innerHTML += `<p style="color:#a33">${dados.erro || "Não foi possível gerar o PIX."}</p>`;
+          return;
+        }
+
+        const formatted = Number(valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+        exibirTelaPix({
+          titulo: formatted,
+          valor: "",
+          qrCodeBase64: dados.qr_code_base64,
+          copiaECola: dados.copia_e_cola,
+          paymentId: dados.payment_id,
+          giftId: null,
+        });
+
+      } catch (erro) {
+        console.error(erro);
+        c.innerHTML += `<p style="color:#a33">Erro ao conectar com o servidor.</p>`;
+      }
+    }
+
+
+    /* =====================================================
+       RSVP
+    ===================================================== */
+
+    function sendRSVP(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("guest").value.trim();
+      const answer = document.getElementById("answer").value;
+
+      const message =
+        `Olá, Manoel e Raísa! ❤️\n\n` +
+        `Meu nome é ${name}.\n` +
+        `Gostaria de confirmar minha presença no casamento de vocês.\n\n` +
+        `Resposta: ${answer}\n\n` +
+        `16 de janeiro de 2027 💍`;
+
+      const link = "https://wa.me/" + whatsapp + "?text=" + encodeURIComponent(message);
+      window.open(link, "_blank");
+    }
+
+
+    /* =====================================================
+       FECHAR MODAL
+    ===================================================== */
+
+    function closeModal() {
+      document.getElementById("modal").classList.remove("show");
+
+      // Para de checar o pagamento quando o convidado fecha o modal
+      if (intervaloPagamento) {
+        clearInterval(intervaloPagamento);
+        intervaloPagamento = null;
+      }
+    }
+
+    document.getElementById("modal").addEventListener("click", function(e) {
+      if (e.target === this) closeModal();
+    });
+
+
+    /* =====================================================
+       INICIALIZAÇÃO
+    ===================================================== */
+
+    updateMusicButton();
+
+  </script>
+
+</body>
+</html>
