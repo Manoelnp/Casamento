@@ -1,0 +1,387 @@
+[
+  {
+    "id": "00",
+    "nome": "Teste",
+    "valor": 0.4,
+    "status": "disponivel"
+  },
+  {
+    "id": "1",
+    "nome": "Lasanheira de vidro",
+    "valor": 89,
+    "status": "disponivel"
+
+  },
+  {
+    "id": "2",
+    "nome": "Talheres inox",
+    "valor": 112,
+    "status": "disponivel"
+  },
+  {
+    "id": "3",
+    "nome": "Porta condimentos",
+    "valor": 79,
+    "status": "disponivel"
+  },
+  {
+    "id": "4",
+    "nome": "Potes de sobremesa",
+    "valor": 66,
+    "status": "disponivel"
+  },
+  {
+    "id": "5",
+    "nome": "Jogo de taças de vinho",
+    "valor": 150,
+    "status": "disponivel"
+  },
+  {
+    "id": "6",
+    "nome": "Potes herméticos",
+    "valor": 90,
+    "status": "disponivel"
+  },
+  {
+    "id": "7",
+    "nome": "Petisqueira de vidro",
+    "valor": 73,
+    "status": "disponivel"
+  },
+  {
+    "id": "8",
+    "nome": "Lixeira 10L inox",
+    "valor": 142,
+    "status": "disponivel"
+  },
+  {
+    "id": "9",
+    "nome": "Lixeira 15L inox",
+    "valor": 160,
+    "status": "disponivel"
+  },
+  {
+    "id": "10",
+    "nome": "Kit assadeira de louça branca",
+    "valor": 160,
+    "status": "disponivel"
+  },
+  {
+    "id": "11",
+    "nome": "Jogo de taça de vinho cristal",
+    "valor": 180,
+    "status": "disponivel"
+  },
+  {
+    "id": "12",
+    "nome": "Jogo de taça champanhe cristal",
+    "valor": 120,
+    "status": "disponivel"
+  },
+  {
+    "id": "13",
+    "nome": "Kit frigideira anti aderente Tramontina (Grafite)",
+    "valor": 143,
+    "status": "disponivel"
+  },
+  {
+    "id": "14",
+    "nome": "Queijeira de vidro Wollf",
+    "valor": 73,
+    "status": "disponivel"
+  },
+  {
+    "id": "15",
+    "nome": "Processador de alimentos Oster",
+    "valor": 180,
+    "status": "disponivel"
+  },
+  {
+    "id": "16",
+    "nome": "Quadros decorativos para sala",
+    "valor": 178,
+    "status": "disponivel"
+  },
+  {
+    "id": "17",
+    "nome": "Ventilador 40cm 8 pás",
+    "valor": 179,
+    "status": "disponivel"
+  },
+  {
+    "id": "18",
+    "nome": "Cabeceira de cama queen",
+    "valor": 186,
+    "status": "disponivel"
+  },
+  {
+    "id": "19",
+    "nome": "Prato para bolo",
+    "valor": 120,
+    "status": "disponivel"
+  },
+  {
+    "id": "20",
+    "nome": "Kit toalha bege (fio penteado)",
+    "valor": 80,
+    "status": "disponivel"
+  },
+  {
+    "id": "21",
+    "nome": "Kit toalha branco (fio penteado)",
+    "valor": 80,
+    "status": "disponivel"
+  },
+  {
+    "id": "22",
+    "nome": "Jogo de cama 3 peças algodão - queen (Bege)",
+    "valor": 95,
+    "status": "disponivel"
+  },
+  {
+    "id": "23",
+    "nome": "Jogo de cama 3 peças algodão - queen (Cinza)",
+    "valor": 95,
+    "status": "disponivel"
+  },
+  {
+    "id": "24",
+    "nome": "Jogo de cama 3 peças algodão - queen (Azul petróleo)",
+    "valor": 95,
+    "status": "disponivel"
+  },
+  {
+    "id": "25",
+    "nome": "Cobre leito BRANCO - queen",
+    "valor": 130,
+    "status": "disponivel"
+  },
+  {
+    "id": "26",
+    "nome": "Cobre leito VERDE - queen",
+    "valor": 130,
+    "status": "disponivel"
+  },
+  {
+    "id": "27",
+    "nome": "Jogo de cama queen bordado luxo",
+    "valor": 150,
+    "status": "disponivel"
+  },
+  {
+    "id": "28",
+    "nome": "Multiprocessador 5 em 1 (Preto)",
+    "valor": 380,
+    "status": "disponivel"
+  },
+  {
+    "id": "29",
+    "nome": "Ferro de passar Black Decker",
+    "valor": 119,
+    "status": "disponivel"
+  },
+  {
+    "id": "30",
+    "nome": "Kit de almofadas",
+    "valor": 96,
+    "status": "disponivel"
+  },
+  {
+    "id": "31",
+    "nome": "Kit de utensílios de cozinha",
+    "valor": 150,
+    "status": "disponível"
+  },
+  {
+    "id": "32",
+    "nome": "Manta para sofá - Off white",
+    "valor": 80,
+    "status": "disponivel"
+  },
+  {
+    "id": "33",
+    "nome": "Ajuda para a Lua de Mel",
+    "valor": 80,
+    "status": "disponivel"
+  },
+  {
+    "id": "34",
+    "nome": "Kit para banheiro de louça branco",
+    "valor": 85,
+    "status": "disponivel"
+  },
+  {
+    "id": "35",
+    "nome": "Kit para banheiro de louça cinza",
+    "valor": 85,
+    "status": "disponivel"
+  },
+  {
+    "id": "36",
+    "nome": "Kit 2 travesseiros pena de Ganso",
+    "valor": 120,
+    "status": "disponivel"
+  },
+  {
+    "id": "37",
+    "nome": "Lençol de elástico queen 100% algodão",
+    "valor": 88,
+    "status": "disponivel"
+  },
+  {
+    "id": "38",
+    "nome": "Lençol de elástico queen 100% algodão",
+    "valor": 88,
+    "status": "disponivel"
+  },
+  {
+    "id": "39",
+    "nome": "Saia de tecido algodão para cama queen (Branco)",
+    "valor": 115,
+    "status": "disponivel"
+  },
+  {
+    "id": "40",
+    "nome": "Saia bordada algodão para cama queen (Branco)",
+    "valor": 120,
+    "status": "disponivel"
+  },
+  {
+    "id": "41",
+    "nome": "Tapete luxo para sala 2m x 2,5m",
+    "valor": 220,
+    "status": "disponivel"
+  },
+  {
+    "id": "42",
+    "nome": "Decoração centro de sala",
+    "valor": 100,
+    "status": "disponivel"
+  },
+  {
+    "id": "43",
+    "nome": "Decoração da sala",
+    "valor": 70,
+    "status": "disponivel"
+  },
+  {
+    "id": "44",
+    "nome": "Ajuda para a Lua de Mel",
+    "valor": 100,
+    "status": "disponivel"
+  },
+  {
+    "id": "45",
+    "nome": "Decoração da sala",
+    "valor": 79,
+    "status": "disponivel"
+  },
+  {
+    "id": "46",
+    "nome": "Máquina de lavar roupa",
+    "valor": 1000,
+    "status": "disponivel"
+  },
+  {
+    "id": "47",
+    "nome": "Kit para churrasco",
+    "valor": 100,
+    "status": "disponivel"
+  },
+  {
+    "id": "48",
+    "nome": "Jogo de panelas",
+    "valor": 180,
+    "status": "disponivel"
+  },
+  {
+    "id": "49",
+    "nome": "Sanduicheira",
+    "valor": 180,
+    "status": "disponivel"
+  },
+  {
+    "id": "50",
+    "nome": "Liquidificador",
+    "valor": 200,
+    "status": "disponivel"
+  },
+  {
+    "id": "51",
+    "nome": "Ajuda para a Lua de Mel",
+    "valor": 200,
+    "status": "disponivel"
+  },
+  {
+    "id": "52",
+    "nome": "Batedeira",
+    "valor": 220,
+    "status": "disponivel"
+  },
+  {
+    "id": "53",
+    "nome": "Air Fryer",
+    "valor": 300,
+    "status": "disponivel"
+  },
+  {
+    "id": "54",
+    "nome": "Ajuda para a Lua de Mel",
+    "valor": 300,
+    "status": "disponivel"
+  },
+  {
+    "id": "55",
+    "nome": "Mesa de madeira",
+    "valor": 350,
+    "status": "disponivel"
+  },
+  {
+    "id": "56",
+    "nome": "Rack para sala",
+    "valor": 400,
+    "status": "disponivel"
+  },
+  {
+    "id": "57",
+    "nome": "Ajuda para a Lua de Mel",
+    "valor": 500,
+    "status": "disponivel"
+  },
+  {
+    "id": "58",
+    "nome": "Cama",
+    "valor": 500,
+    "status": "disponivel"
+  },
+  {
+    "id": "59",
+    "nome": "Gelágua Electrolux",
+    "valor": 600,
+    "status": "disponivel"
+  },
+  {
+    "id": "60",
+    "nome": "Sofá",
+    "valor": 800,
+    "status": "disponivel"
+  },
+  {
+    "id": "61",
+    "nome": "Ajuda para a Lua de Mel",
+    "valor": 1000,
+    "status": "disponivel"
+  },
+  {
+    "id": "62",
+    "nome": "Televisão",
+    "valor": 1500,
+    "status": "disponivel"
+  },
+  {
+    "id": "63",
+    "nome": "Geladeira",
+    "valor": 2000,
+    "status": "disponivel"
+  }
+]
