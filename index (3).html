@@ -264,6 +264,10 @@
       padding: 40px 18px;
     }
 
+    .hero-photos {
+      display: none;
+    }
+
     .hero-card {
       width: min(620px,100%);
       text-align: center;
@@ -391,7 +395,8 @@
     .rsvp { padding: 34px; }
 
     .rsvp input,
-    .rsvp select {
+    .rsvp select,
+    .rsvp textarea {
       width: 100%;
       padding: 14px;
       margin: 7px 0 12px;
@@ -400,10 +405,12 @@
       background: #fffdf9;
       font: inherit;
       outline: none;
+      resize: vertical;
     }
 
     .rsvp input:focus,
-    .rsvp select:focus { border-color: var(--gold); }
+    .rsvp select:focus,
+    .rsvp textarea:focus { border-color: var(--gold); }
 
     .rsvp .btn {
       margin-top: 8px;
@@ -493,6 +500,22 @@
       text-align: center;
       background: #f1eadf;
       border-radius: 18px;
+    }
+
+    .payment-options {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .payment-options .btn {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    @media (max-width: 480px) {
+      .payment-options { flex-direction: column; }
     }
 
     .pix-title { font: 27px "Cormorant Garamond", serif; }
@@ -586,15 +609,28 @@
       section { padding: 55px 14px; }
 
       .hero {
-        min-height: 100svh;
-        padding: 25px 14px 35px;
-        background-size: contain;
-        background-position: center center;
-        background-repeat: no-repeat;
+        min-height: auto;
+        padding: 0 0 30px;
+        background-image: none;
         background-color: #2f3325;
       }
 
-      .hero-card { padding: 20px 12px 30px; }
+      .hero-photos {
+        display: flex;
+        gap: 10px;
+        padding: 18px 14px 0;
+      }
+
+      .hero-photos img {
+        flex: 1;
+        width: 50%;
+        height: 170px;
+        object-fit: cover;
+        border-radius: 14px;
+        box-shadow: 0 8px 20px rgba(0,0,0,.25);
+      }
+
+      .hero-card { padding: 24px 16px 10px; }
       .kicker { font-size: 9px; letter-spacing: .25em; }
       .names { font-size: clamp(58px, 20vw, 82px); margin: 22px 0; }
       .hero-date { font-size: 10px; letter-spacing: .10em; }
@@ -751,6 +787,10 @@
 
 
   <header class="hero">
+      <div class="hero-photos">
+    <img src="foto-casal.jpg" alt="Manoel e Raísa">
+    <img src="foto-igreja.jpg" alt="Igreja de Nossa Senhora da Guia">
+      </div>
     <div class="hero-card">
       <div class="kicker">NOSSO CASAMENTO</div>
       <div class="names">Manoel <small>&</small> Raísa</div>
@@ -837,10 +877,29 @@
         <h2>Confirme sua presença</h2>
 
         <form onsubmit="sendRSVP(event)">
-          <input id="guest" required autocomplete="name" placeholder="Seu nome">
+          <select id="rsvpTipo" required onchange="atualizarTipoRSVP()">
+            <option value="">Como você vai comparecer?</option>
+            <option value="sozinho">Sozinho(a)</option>
+            <option value="casal">Casal</option>
+            <option value="familia">Família</option>
+          </select>
+
+          <div id="camposSozinho" class="rsvp-campos" style="display:none">
+            <input id="nomeSozinho" autocomplete="name" placeholder="Seu nome">
+          </div>
+
+          <div id="camposCasal" class="rsvp-campos" style="display:none">
+            <input id="nomeCompanheiro" autocomplete="name" placeholder="Nome do companheiro">
+            <input id="nomeCompanheira" autocomplete="name" placeholder="Nome da companheira">
+          </div>
+
+          <div id="camposFamilia" class="rsvp-campos" style="display:none">
+            <input id="nomeResponsavelFamilia" autocomplete="name" placeholder="Seu nome (responsável)">
+            <textarea id="membrosFamilia" rows="3" placeholder="Nome de cada pessoa da família que vai (um por linha)"></textarea>
+          </div>
 
           <select id="answer" required>
-            <option value="">Você estará conosco?</option>
+            <option value="">Vocês estarão conosco?</option>
             <option value="Sim, com certeza!">Sim, com certeza!</option>
             <option value="Infelizmente não poderei ir">Infelizmente não poderei ir</option>
           </select>
@@ -882,7 +941,7 @@
 
     // URL do backend que gera o PIX e confirma o pagamento.
     // Troque para a URL publicada quando colocar no ar (ex: Render/Railway).
-    const API_URL = "http://localhost:3000";
+    const API_URL = "https://casamento-t3zw.onrender.com";
 
     // Guarda a lista de presentes vinda do backend, para não precisar
     // buscar de novo toda vez que abrir um presente específico.
@@ -1147,6 +1206,28 @@
       const presente = presentesCache.find((p) => p.id === id);
       const c = document.getElementById("modalContent");
 
+      const valorFormatado = presente
+        ? `R$ ${Number(presente.valor).toFixed(2).replace(".", ",")}`
+        : "";
+
+      c.innerHTML = `
+        <div class="eyebrow">PRESENTE ESCOLHIDO</div>
+        <h3>${presente ? presente.nome : ""}</h3>
+        ${valorFormatado ? `<p>Valor: <strong>${valorFormatado}</strong></p>` : ""}
+        <p>Como você prefere nos presentear?</p>
+
+        <div class="payment-options">
+          <button class="btn" onclick="pagarComPix('${id}')">PIX (na hora)</button>
+          <button class="btn" onclick="pagarComCartao('${id}')">CARTÃO (com parcelamento)</button>
+        </div>
+      `;
+    }
+
+    async function pagarComPix(id) {
+
+      const presente = presentesCache.find((p) => p.id === id);
+      const c = document.getElementById("modalContent");
+
       c.innerHTML = `
         <div class="eyebrow">PRESENTE ESCOLHIDO</div>
         <h3>${presente ? presente.nome : ""}</h3>
@@ -1170,6 +1251,33 @@
           paymentId: dados.payment_id,
           giftId: id,
         });
+
+      } catch (erro) {
+        console.error(erro);
+        c.innerHTML += `<p style="color:#a33">Erro ao conectar com o servidor.</p>`;
+      }
+    }
+
+    async function pagarComCartao(id) {
+
+      const c = document.getElementById("modalContent");
+
+      c.innerHTML = `
+        <div class="eyebrow">PRESENTE ESCOLHIDO</div>
+        <h3>Preparando pagamento no cartão...</h3>
+        <p>Você vai ser redirecionado para uma página segura do Mercado Pago.</p>
+      `;
+
+      try {
+        const res = await fetch(`${API_URL}/cartao/${id}`, { method: "POST" });
+        const dados = await res.json();
+
+        if (!res.ok) {
+          c.innerHTML += `<p style="color:#a33">${dados.erro || "Não foi possível iniciar o pagamento no cartão."}</p>`;
+          return;
+        }
+
+        window.location.href = dados.link_pagamento;
 
       } catch (erro) {
         console.error(erro);
@@ -1272,6 +1380,22 @@
         return;
       }
 
+      const formatted = Number(valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+      const c = document.getElementById("modalContent");
+
+      c.innerHTML = `
+        <div class="eyebrow">SEU PRESENTE</div>
+        <h3>${formatted}</h3>
+        <p>Como você prefere nos presentear?</p>
+
+        <div class="payment-options">
+          <button class="btn" onclick="pagarComPixPersonalizado(${Number(valor)})">PIX (na hora)</button>
+          <button class="btn" onclick="pagarComCartaoPersonalizado(${Number(valor)})">CARTÃO (com parcelamento)</button>
+        </div>
+      `;
+    }
+
+    async function pagarComPixPersonalizado(valor) {
       const c = document.getElementById("modalContent");
       c.innerHTML = `
         <div class="eyebrow">SEU PRESENTE</div>
@@ -1282,7 +1406,7 @@
         const res = await fetch(`${API_URL}/personalizado`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ valor: Number(valor) }),
+          body: JSON.stringify({ valor }),
         });
 
         const dados = await res.json();
@@ -1309,22 +1433,100 @@
       }
     }
 
+    async function pagarComCartaoPersonalizado(valor) {
+      const c = document.getElementById("modalContent");
+      c.innerHTML = `
+        <div class="eyebrow">SEU PRESENTE</div>
+        <h3>Preparando pagamento no cartão...</h3>
+        <p>Você vai ser redirecionado para uma página segura do Mercado Pago.</p>
+      `;
+
+      try {
+        const res = await fetch(`${API_URL}/cartao-personalizado`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ valor }),
+        });
+
+        const dados = await res.json();
+
+        if (!res.ok) {
+          c.innerHTML += `<p style="color:#a33">${dados.erro || "Não foi possível iniciar o pagamento no cartão."}</p>`;
+          return;
+        }
+
+        window.location.href = dados.link_pagamento;
+
+      } catch (erro) {
+        console.error(erro);
+        c.innerHTML += `<p style="color:#a33">Erro ao conectar com o servidor.</p>`;
+      }
+    }
+
 
     /* =====================================================
        RSVP
     ===================================================== */
 
-    function sendRSVP(e) {
+    function atualizarTipoRSVP() {
+      const tipo = document.getElementById("rsvpTipo").value;
+
+      document.getElementById("camposSozinho").style.display = tipo === "sozinho" ? "block" : "none";
+      document.getElementById("camposCasal").style.display = tipo === "casal" ? "block" : "none";
+      document.getElementById("camposFamilia").style.display = tipo === "familia" ? "block" : "none";
+    }
+
+    async function sendRSVP(e) {
       e.preventDefault();
 
-      const name = document.getElementById("guest").value.trim();
-      const answer = document.getElementById("answer").value;
+      const tipo = document.getElementById("rsvpTipo").value;
+      const resposta = document.getElementById("answer").value;
+      let nomes = [];
+      let quemVai = "";
+
+      if (tipo === "sozinho") {
+        const nome = document.getElementById("nomeSozinho").value.trim();
+        if (!nome) { alert("Preencha seu nome."); return; }
+        nomes = [nome];
+        quemVai = nome;
+
+      } else if (tipo === "casal") {
+        const companheiro = document.getElementById("nomeCompanheiro").value.trim();
+        const companheira = document.getElementById("nomeCompanheira").value.trim();
+        if (!companheiro || !companheira) { alert("Preencha os dois nomes do casal."); return; }
+        nomes = [companheiro, companheira];
+        quemVai = `${companheiro} e ${companheira}`;
+
+      } else if (tipo === "familia") {
+        const responsavel = document.getElementById("nomeResponsavelFamilia").value.trim();
+        const membrosTexto = document.getElementById("membrosFamilia").value.trim();
+        const membros = membrosTexto.split("\n").map((n) => n.trim()).filter(Boolean);
+        if (!responsavel) { alert("Preencha o nome do responsável pela família."); return; }
+        nomes = [responsavel, ...membros];
+        quemVai = `Família de ${responsavel}` + (membros.length ? ` (${nomes.join(", ")})` : "");
+
+      } else {
+        alert("Escolha como você vai comparecer.");
+        return;
+      }
+
+      // Salva a confirmação no backend (fica guardado junto com os presentes)
+      try {
+        await fetch(`${API_URL}/rsvp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tipo, nomes, resposta }),
+        });
+      } catch (erro) {
+        console.error("Não foi possível salvar a confirmação no servidor:", erro);
+        // Mesmo se isso falhar, seguimos para o WhatsApp abaixo, pra não travar o convidado.
+      }
 
       const message =
         `Olá, Manoel e Raísa! ❤️\n\n` +
-        `Meu nome é ${name}.\n` +
-        `Gostaria de confirmar minha presença no casamento de vocês.\n\n` +
-        `Resposta: ${answer}\n\n` +
+        `${quemVai}\n` +
+        `Gostaríamos de confirmar presença no casamento de vocês.\n\n` +
+        `Resposta: ${resposta}\n\n` +
         `16 de janeiro de 2027 💍`;
 
       const link = "https://wa.me/" + whatsapp + "?text=" + encodeURIComponent(message);
