@@ -3,55 +3,72 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const { Redis } = require('@upstash/redis');
 const { MercadoPagoConfig, Payment, Preference } = require('mercadopago');
-
-// 🔎 DIAGNÓSTICO: captura qualquer erro que faria o processo morrer em
-// silêncio, e força a mensagem a aparecer no log antes de encerrar.
-process.on('uncaughtException', (err) => {
-  console.error('💥 ERRO NÃO TRATADO (uncaughtException):', err);
-});
-process.on('unhandledRejection', (err) => {
-  console.error('💥 PROMISE REJEITADA (unhandledRejection):', err);
-});
-
-// 🔎 DIAGNÓSTICO: confirma se as variáveis de ambiente chegaram certinho
-console.log('🔍 UPSTASH_REDIS_REST_URL definida?', !!process.env.UPSTASH_REDIS_REST_URL);
-console.log('🔍 UPSTASH_REDIS_REST_TOKEN definida?', !!process.env.UPSTASH_REDIS_REST_TOKEN);
-console.log('🔍 MP_ACCESS_TOKEN definida?', !!process.env.MP_ACCESS_TOKEN);
 
 const app = express();
 app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
 app.use(express.json());
 
-const CHAVE_PRESENTES = 'presentes'; // chave única no Redis onde a lista inteira fica guardada
-
-let redis;
-try {
-  redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-  });
-  console.log('✅ Cliente Redis criado com sucesso');
-} catch (erro) {
-  console.error('💥 ERRO ao criar cliente Redis:', erro);
-}
+const DB_PATH = path.join(__dirname, 'presentes.json'); // usado só como "semente" inicial
+const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
+const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
+const CHAVE_PRESENTES = 'presentes';
 
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
 const paymentClient = new Payment(client);
 const preferenceClient = new Preference(client);
 
+// Detecta se estamos usando token de TESTE (começa com "TEST-") ou de
+// PRODUÇÃO (começa com "APP_USR-"). Usado para só ativar o truque de
+// aprovação automática quando estivermos testando.
 const MODO_TESTE = (process.env.MP_ACCESS_TOKEN || '').startsWith('TEST-');
 
-// ---------- "Banco de dados" — agora no Upstash Redis ----------
+// ---------- "Banco de dados" no Upstash Redis (permanente, não some quando o servidor reinicia) ----------
+
+async function upstashGet(chave) {
+  const res = await fetch(`${UPSTASH_URL}/get/${chave}`, {
+    headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
+  });
+  const dados = await res.json();
+  return dados.result;
+}
+
+async function upstashSet(chave, valorTexto) {
+  await fetch(`${UPSTASH_URL}/set/${chave}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
+    body: valorTexto,
+  });
+}
 
 async function lerPresentes() {
-  const dados = await redis.get(CHAVE_PRESENTES);
-  return dados || [];
+  const valor = await upstashGet(CHAVE_PRESENTES);
+  if (valor) return JSON.parse(valor);
+
+  // Primeira vez rodando (Upstash ainda vazio): semeia com a lista inicial
+  // do arquivo presentes.json que veio no projeto.
+  const inicial = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+  await upstashSet(CHAVE_PRESENTES, JSON.stringify(inicial));
+  return inicial;
 }
 
 async function salvarPresentes(presentes) {
-  await redis.set(CHAVE_PRESENTES, presentes);
+  await upstashSet(CHAVE_PRESENTES, JSON.stringify(presentes));
+}
+
+// ---------- Confirmações de presença (RSVP), guardadas do mesmo jeito ----------
+
+const CHAVE_CONFIRMACOES = 'confirmacoes';
+
+async function lerConfirmacoes() {
+  const valor = await upstashGet(CHAVE_CONFIRMACOES);
+  return valor ? JSON.parse(valor) : [];
+}
+
+async function salvarConfirmacao(confirmacao) {
+  const confirmacoes = await lerConfirmacoes();
+  confirmacoes.push({ ...confirmacao, data: new Date().toISOString() });
+  await upstashSet(CHAVE_CONFIRMACOES, JSON.stringify(confirmacoes));
 }
 
 async function buscarPresente(id) {
@@ -66,26 +83,6 @@ async function atualizarPresente(id, dadosNovos) {
   presentes[index] = { ...presentes[index], ...dadosNovos };
   await salvarPresentes(presentes);
   return presentes[index];
-}
-
-async function buscarPresentePorPaymentId(paymentId) {
-  const presentes = await lerPresentes();
-  return presentes.find((p) => String(p.payment_id) === String(paymentId));
-}
-
-// Na primeira vez que o servidor rodar (Redis ainda vazio), popula a lista
-// inicial a partir do arquivo presentes.seed.json que vai junto no projeto.
-async function popularListaInicialSeNecessario() {
-  const existente = await redis.get(CHAVE_PRESENTES);
-
-  if (!existente) {
-    const seedPath = path.join(__dirname, 'presentes.seed.json');
-    const dadosIniciais = JSON.parse(fs.readFileSync(seedPath, 'utf-8'));
-    await redis.set(CHAVE_PRESENTES, dadosIniciais);
-    console.log(`🌱 Lista inicial de ${dadosIniciais.length} presentes carregada no Redis.`);
-  } else {
-    console.log(`✅ Lista de presentes já existe no Redis (${existente.length} itens).`);
-  }
 }
 
 // Libera presentes reservados há mais de 30 minutos que não foram pagos
@@ -106,7 +103,7 @@ async function liberarReservasExpiradas() {
   if (mudou) await salvarPresentes(presentes);
 }
 setInterval(() => {
-  liberarReservasExpiradas().catch((erro) => console.error('Erro ao liberar reservas:', erro));
+  liberarReservasExpiradas().catch((erro) => console.error('Erro ao liberar reservas expiradas:', erro));
 }, 5 * 60 * 1000);
 
 // ---------------------------- Rotas ----------------------------
@@ -114,27 +111,21 @@ setInterval(() => {
 // Lista todos os presentes (o frontend usa isso para montar a lista e já
 // mostrar quais foram dados)
 app.get('/presentes', async (req, res) => {
-  try {
-    await liberarReservasExpiradas();
-    res.json(await lerPresentes());
-  } catch (erro) {
-    console.error('Erro ao listar presentes:', erro);
-    res.status(500).json({ erro: 'Erro ao carregar a lista de presentes' });
-  }
+  await liberarReservasExpiradas();
+  res.json(await lerPresentes());
 });
 
 // Gera o PIX para um presente específico da lista
 app.post('/reservar/:id', async (req, res) => {
   const { id } = req.params;
+  const presente = await buscarPresente(id);
+
+  if (!presente) return res.status(404).json({ erro: 'Presente não encontrado' });
+  if (presente.status !== 'disponivel') {
+    return res.status(400).json({ erro: 'Esse presente já foi escolhido por outra pessoa' });
+  }
 
   try {
-    const presente = await buscarPresente(id);
-
-    if (!presente) return res.status(404).json({ erro: 'Presente não encontrado' });
-    if (presente.status !== 'disponivel') {
-      return res.status(400).json({ erro: 'Esse presente já foi escolhido por outra pessoa' });
-    }
-
     const resultado = await paymentClient.create({
       body: {
         transaction_amount: Number(presente.valor),
@@ -142,6 +133,9 @@ app.post('/reservar/:id', async (req, res) => {
         payment_method_id: 'pix',
         payer: {
           email: process.env.PAGADOR_EMAIL_PADRAO,
+          // Só em modo TESTE: esse nome faz o Mercado Pago aprovar o PIX
+          // sozinho, poucos segundos depois de criado. Em produção esse
+          // campo nem é enviado, então não interfere no pagador real.
           ...(MODO_TESTE ? { first_name: 'APRO' } : {}),
         },
         external_reference: presente.id,
@@ -199,18 +193,18 @@ app.post('/personalizado', async (req, res) => {
 });
 
 // Gera o link de pagamento no CARTÃO (com parcelamento) para um presente
-// específico da lista.
+// específico da lista. O convidado é redirecionado pra uma página segura
+// do Mercado Pago, digita os dados do cartão lá, e volta pro site depois.
 app.post('/cartao/:id', async (req, res) => {
   const { id } = req.params;
+  const presente = await buscarPresente(id);
+
+  if (!presente) return res.status(404).json({ erro: 'Presente não encontrado' });
+  if (presente.status !== 'disponivel') {
+    return res.status(400).json({ erro: 'Esse presente já foi escolhido por outra pessoa' });
+  }
 
   try {
-    const presente = await buscarPresente(id);
-
-    if (!presente) return res.status(404).json({ erro: 'Presente não encontrado' });
-    if (presente.status !== 'disponivel') {
-      return res.status(400).json({ erro: 'Esse presente já foi escolhido por outra pessoa' });
-    }
-
     const preferencia = await preferenceClient.create({
       body: {
         items: [
@@ -284,31 +278,44 @@ app.post('/cartao-personalizado', async (req, res) => {
   }
 });
 
-// Consulta de status por ID do presente (lista fixa)
-app.get('/status/:id', async (req, res) => {
+// Salva uma confirmação de presença (RSVP). O frontend também abre o
+// WhatsApp junto, então isso é só um registro organizado de backup.
+app.post('/rsvp', async (req, res) => {
+  const { tipo, nomes, resposta } = req.body;
+
+  if (!tipo || !Array.isArray(nomes) || nomes.length === 0 || !resposta) {
+    return res.status(400).json({ erro: 'Dados incompletos' });
+  }
+
   try {
-    const presente = await buscarPresente(req.params.id);
-    if (!presente) return res.status(404).json({ erro: 'Presente não encontrado' });
-    res.json({ status: presente.status });
+    await salvarConfirmacao({ tipo, nomes, resposta });
+    res.json({ ok: true });
   } catch (erro) {
-    console.error('Erro ao consultar status:', erro);
-    res.status(500).json({ erro: 'Erro ao consultar status' });
+    console.error('Erro ao salvar confirmação de presença:', erro);
+    res.status(500).json({ erro: 'Não foi possível salvar a confirmação.' });
   }
 });
 
-// Consulta de status por ID do pagamento
+// Consulta de status por ID do presente (lista fixa)
+app.get('/status/:id', async (req, res) => {
+  const presente = await buscarPresente(req.params.id);
+  if (!presente) return res.status(404).json({ erro: 'Presente não encontrado' });
+  res.json({ status: presente.status });
+});
+
+// Consulta de status por ID do pagamento (funciona tanto para a lista fixa
+// quanto para o valor personalizado — usado pelo frontend enquanto aguarda)
 app.get('/status-pagamento/:paymentId', async (req, res) => {
   try {
     const info = await paymentClient.get({ id: req.params.paymentId });
-    res.json({ status: info.status });
+    res.json({ status: info.status }); // pending | approved | rejected | etc.
   } catch (erro) {
     console.error('Erro ao consultar pagamento:', erro);
     res.status(500).json({ erro: 'Erro ao consultar pagamento' });
   }
 });
 
-// Webhook: o Mercado Pago chama isso automaticamente quando o PIX (ou o
-// cartão, via Checkout Pro) é pago
+// Webhook: o Mercado Pago chama isso automaticamente quando o PIX é pago
 app.post('/webhook', async (req, res) => {
   try {
     const { type, data } = req.body;
@@ -332,14 +339,6 @@ app.post('/webhook', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-
-// ✅ CORREÇÃO: abre a porta IMEDIATAMENTE (o Render precisa ver isso rápido,
-// senão ele mata o processo achando que travou)
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
-});
-
-// Só depois disso, popula o Redis em segundo plano — sem bloquear a inicialização
-popularListaInicialSeNecessario().catch((erro) => {
-  console.error('💥 Erro ao popular lista inicial no Redis:', erro);
 });
