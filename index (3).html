@@ -613,38 +613,41 @@
       section { padding: 55px 14px; }
 
       .hero {
-        min-height: auto;
-        padding: 0 0 30px;
-        background-color: #2f3325;
-        display: block;
+        min-height: 100svh;
+        min-height: 100dvh;
+
+        padding: 24px 14px 34px;
+
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+
+        background:
+          linear-gradient(
+          180deg,
+          rgba(18,18,15,.04),
+          rgba(18,18,15,.66)
+          ),
+        url("foto-casal.jpg") center / cover no-repeat;
       }
 
       .hero-photos {
-        display: flex;
-        width: 100%;
-        justify-content: center;
-        align-items: center;
-        padding: 0;
-        margin: 0 0 20px;
-      }
-
-      .hero-photos img {
-        width: min(82vw, 310px);
-        height: 300px;
-        object-fit: cover;
-        object-position: center;
-        border-radius: 20px;
-        box-shadow: 0 12px 30px rgba(0,0,0,.30);
+        display: none;
       }
 
       .hero-card {
         width: 100%;
-        padding: 0 5px 10px;
+        padding: 0 8px 10px;
         text-align: center;
+        color: white;
       }
-      .kicker { font-size: 9px; letter-spacing: .25em; }
-      .names { font-size: clamp(58px, 20vw, 82px); margin: 22px 0; }
-      .hero-date { font-size: 10px; letter-spacing: .10em; }
+      .kicker { font-size: 10px; letter-spacing: .30em; }
+      .names { font-size: clamp(61px, 18.5vw, 88px); line-height: .82; margin: 16px 0 20px;}
+      .names small {
+        font-size: .42em;
+        margin: 10px 0;
+      }
+      .hero-date { font-size: 11px; letter-spacing: .10em; }
 
       .welcome-monogram { font-size: 65px; margin-bottom: 22px; }
       .welcome-names { font-size: 25px; letter-spacing: .09em; margin-bottom: 22px; }
