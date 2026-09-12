@@ -254,18 +254,22 @@
     }
 
     .hero {
-      min-height: 100svh;
-      background:
-        linear-gradient(180deg, rgba(24,21,17,.08), rgba(24,21,17,.55)),
-        url("hero.png") center/cover;
+      min-height: auto;
+      padding: 25px 14px 35px;
+      background: #2f3325;
       display: flex;
-      align-items: flex-end;
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      padding: 40px 18px;
     }
 
     .hero-photos {
-      display: none;
+      display: flex;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      margin: 0 0 20px;
     }
 
     .hero-card {
@@ -611,27 +615,33 @@
       .hero {
         min-height: auto;
         padding: 0 0 30px;
-        background-image: none;
         background-color: #2f3325;
         display: block;
       }
 
       .hero-photos {
         display: flex;
-        gap: 10px;
-        padding: 18px 14px 0;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        margin: 0 0 20px;
       }
 
       .hero-photos img {
-        flex: 1;
-        width: 50%;
-        height: 170px;
+        width: min(82vw, 310px);
+        height: 300px;
         object-fit: cover;
-        border-radius: 14px;
-        box-shadow: 0 8px 20px rgba(0,0,0,.25);
+        object-position: center;
+        border-radius: 20px;
+        box-shadow: 0 12px 30px rgba(0,0,0,.30);
       }
 
-      .hero-card { padding: 24px 16px 10px; }
+      .hero-card {
+        width: 100%;
+        padding: 0 5px 10px;
+        text-align: center;
+      }
       .kicker { font-size: 9px; letter-spacing: .25em; }
       .names { font-size: clamp(58px, 20vw, 82px); margin: 22px 0; }
       .hero-date { font-size: 10px; letter-spacing: .10em; }
@@ -790,7 +800,6 @@
   <header class="hero">
       <div class="hero-photos">
     <img src="foto-casal.jpg" alt="Manoel e Raísa">
-    <img src="foto-igreja.jpg" alt="Igreja de Nossa Senhora da Guia">
       </div>
     <div class="hero-card">
       <div class="kicker">NOSSO CASAMENTO</div>
